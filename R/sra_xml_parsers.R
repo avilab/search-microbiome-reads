@@ -3,7 +3,10 @@ fix_xml <- function(x) {
   read_xml(paste("<document>", x, "</document>"))
 }
 
-parse_expxml <- function(xml) {
+parse_expxml <- function(xml, id = NULL) {
+  
+  if (!is.null(id)) message(id)
+  
   children <- xml %>% xml_children()
   child_names <- xml_name(children)
   child_attrs <- xml_attrs(children)
