@@ -37,3 +37,7 @@ if (file.exists("output/PRJNA361402_query_2018-10-02.csv")) {
 
 knitr::kable(head(prj_wgs)) %>% 
   kableExtra::kable_styling()
+
+prj_wgs
+length(unique(prj_wgs$Experiment_name))
+length(unique(prj_wgs$Biosample))
