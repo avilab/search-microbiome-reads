@@ -6,7 +6,6 @@
 #'---
 
 library(tidyverse)
-library(DT)
 
 #' Check if we already have query data available.
 
@@ -36,4 +35,5 @@ if (file.exists("output/PRJNA361402_query_2018-10-02.csv")) {
   write_csv(results_wgs, glue::glue("output/PRJNA361402_query_{Sys.Date()}.csv"))
 }
 
-datatable(prj_wgs)
+knitr::kable(prj_wgs) %>% 
+  kableExtra::kable_styling()
