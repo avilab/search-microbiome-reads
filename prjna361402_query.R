@@ -1,6 +1,12 @@
+#'---
+#' author: "Taavi Päll"
+#' date: "2018-10-01"
+#' output: github_document
+#' always_allow_html: yes
+#'---
 
 library(tidyverse)
-library(entrezquery)
+library(DT)
 
 #' Check if we already have query data available.
 
@@ -30,5 +36,4 @@ if (file.exists("output/PRJNA361402_query_2018-10-02.csv")) {
   write_csv(results_wgs, glue::glue("output/PRJNA361402_query_{Sys.Date()}.csv"))
 }
 
-DT::datatable(prj_wgs)
-
+datatable(prj_wgs)
