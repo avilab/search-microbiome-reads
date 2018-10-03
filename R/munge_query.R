@@ -51,6 +51,3 @@ results_wgs_paired_filtered %>%
 filter(results_wgs_paired_filtered, Bioproject == "PRJNA290729") %>% 
   pull(Run_acc) %>% 
   unique()
-
-
-
