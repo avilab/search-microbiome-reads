@@ -42,7 +42,15 @@ treatments <- select(supp2, Sample, Treatment) %>%
 treatments <- left_join(treatments, acc_sample) %>% 
   select(run_accession, everything())
 aspera <- left_join(treatments, fq_ftp) %>% 
-  select(run_accession:treatment, fastq_aspera)
+  select(run_accession:treatment, fastq_aspera) %>% 
+  separate(fastq_aspera, c("fq1", "fq2"), sep = ";") %>% 
+  select(sample, treatment, run_accession, everything())
 
 samps <- filter(aspera, str_detect(sample, "10V"))
-samps$fastq_aspera[1]
+
+#' Check if target dir exists and if not create 
+path <- glue("~/fastq/{str_to_lower(project)}")
+if (!dir.exists(path)) dir.create(path)
+
+write_tsv(samps, file.path(path, "samples.tsv"))
+
