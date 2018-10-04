@@ -53,4 +53,3 @@ path <- glue("~/fastq/{str_to_lower(project)}")
 if (!dir.exists(path)) dir.create(path)
 
 write_tsv(samps, file.path(path, "samples.tsv"))
-
