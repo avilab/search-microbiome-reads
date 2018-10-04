@@ -1,18 +1,45 @@
 library(httr)
 library(tidyverse)
 library(xml2)
+library(glue)
+library(readxl)
 
-study_xml_url <- "https://www.ebi.ac.uk/ena/data/view/{study}&display=xml&download=xml&filename={study}.xml"
-bioproject <- "PRJNA361402"
+project <- "PRJNA361402"
 study <- "SRP100518"
 
-url <- glue::glue(study_xml_url)
-resp <- GET(url)
-content(resp, as = "text") %>% 
-  read_xml() %>%
-  XML::xmlTreeParse()
-
-
-fq <- GET("http://www.ebi.ac.uk/ena/data/warehouse/filereport?accession=SRP100518&result=read_run&fields=run_accession,fastq_ftp,fastq_md5,fastq_bytes")
+#' retrieve fastq file info and urls
+fq <- GET(glue("http://www.ebi.ac.uk/ena/data/warehouse/filereport?accession={study}&result=read_run"))
 fq_ftp <- content(fq, encoding = "UTF8") %>% read_delim(delim = "\t")
-fq_ftp
+fq_ftp[1,] %>% unlist()
+
+
+#' Runs and samples
+url <- glue("https://www.ebi.ac.uk/ena/data/view/{project}&portal=read_run&display=xml")
+resp <- GET(url)
+read_run <- content(resp, encoding = "UTF8")
+contents <- read_run %>% 
+  read_xml() %>% 
+  xml_contents()
+
+run_df <- contents %>% 
+  xml_attrs() %>% 
+  rbind_list()
+run_df$title <- contents %>% xml_find_first("TITLE") %>% 
+  xml_text()
+acc_sample <- separate(run_df, title, c("title", "sample"), sep = "; ") %>% 
+  select(run_accession = accession, sample)
+
+#' Treatments come from Supplement2 of https://www.nature.com/articles/nm.4345
+if (!file.exists("data/nm.4345-S3.xlsx")) {
+  supp2_url <- "https://media.nature.com/original/nature-assets/nm/journal/v23/n7/extref/nm.4345-S3.xlsx"
+  download.file(supp2_url, "data/nm.4345-S3.xlsx")
+}
+
+supp2 <- read_excel("data/nm.4345-S3.xlsx", range = "A4:N134", col_names = FALSE)
+col_names <- read_excel("data/nm.4345-S3.xlsx", range = "A2:N2")
+colnames(supp2) <- colnames(col_names)
+treatments <- select(supp2, Sample, Treatment) %>% 
+  rename_all(str_to_lower)
+treatments <- left_join(treatments, acc_sample) %>% 
+  select(run_accession, everything())
+treatments
