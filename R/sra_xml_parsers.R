@@ -3,6 +3,10 @@ fix_xml <- function(x) {
   read_xml(paste("<document>", x, "</document>"))
 }
 
+LIB_to_camelcase <- function(x) {
+  str_replace_all(x, "_", " ") %>% str_to_title() %>% str_replace_all(" ", "") 
+}
+
 parse_expxml <- function(xml, id = NULL) {
   
   if (!is.null(id)) message(id)
@@ -19,11 +23,11 @@ parse_expxml <- function(xml, id = NULL) {
                                    "LIBRARY_SOURCE", 
                                    "LIBRARY_SELECTION")
   
-  library_layout <- data_frame(node = str_to_lower("LIBRARY_LAYOUT"), value = xml_find_first(xml, "/document//Library_descriptor/LIBRARY_LAYOUT") %>% 
+  library_layout <- data_frame(node = LIB_to_camelcase("LIBRARY_LAYOUT"), value = xml_find_first(xml, "/document//Library_descriptor/LIBRARY_LAYOUT") %>% 
                                  xml_contents() %>% 
                                  xml_name())
   
-  library_descriptor <- data_frame(node = str_to_lower(library_descriptor_nodes), 
+  library_descriptor <- data_frame(node = LIB_to_camelcase(library_descriptor_nodes), 
                                    value = map_chr(library_descriptor_nodes, 
                                                    ~xml_text(xml_contents(xml_find_first(xml, str_c("/document//Library_descriptor/", .x)))))) %>% 
     bind_rows(library_layout)
@@ -45,7 +49,7 @@ parse_expxml <- function(xml, id = NULL) {
                          value = xml_text(Biosample))) %>% 
     unite(key, node, attr) %>% 
     spread(key, value) %>% 
-    rename_all(~str_replace(.x, "_NA$", ""))
+    rename_all(~str_replace(.x, "_NA$|_acc$", ""))
 }
 
 parse_runs_xml <- function(runs) {
@@ -57,6 +61,9 @@ parse_runs_xml <- function(runs) {
              data = map(child_attrs, ~data_frame(attr = names(.x), value = .x))) %>% 
     unnest() %>% 
     unite(key, node, attr) %>% 
-    spread(key, value)
+    spread(key, value) %>% 
+    rename_all(~str_replace(.x, "_acc$", ""))
 }
 
+parse_expxml_safely <- safely(parse_expxml, quiet = FALSE)
+parse_runs_xml_safely <- safely(parse_runs_xml, quiet = FALSE)

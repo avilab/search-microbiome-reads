@@ -16,7 +16,7 @@ ggplot(data = result_selected) +
   geom_histogram(mapping = aes(x = CreateDate), bins = 30) +
   facet_wrap(~library_layout)
 
-# Whoaa.., one project contributes mos of the samples
+# Whoaa.., one project contributes most of the samples
 results_wgs_paired %>% 
   group_by(Bioproject) %>% 
   summarise(N = n()) %>% 
@@ -48,6 +48,26 @@ results_wgs_paired_filtered %>%
   summarise(N = n()) %>% 
   arrange(desc(N))
 
-filter(results_wgs_paired_filtered, Bioproject == "PRJNA290729") %>% 
-  pull(Run_acc) %>% 
-  unique()
+prj <- filter(results_wgs_paired_filtered, Bioproject == "PRJNA290729")
+
+library(httr)
+library(xml2)
+
+study_xml_url <- "https://www.ebi.ac.uk/ena/data/view/{study}&display=xml&download=xml&filename={study}.xml"
+study <- unique(prj$Study_acc)
+
+unique(prj$Bioproject)
+
+url <- glue::glue(study_xml_url)
+resp <- GET(url)
+content(resp, as = "text") %>% 
+  read_xml() %>%
+  XML::xmlTreeParse()
+
+
+warehouse_url <- glue::glue("http://www.ebi.ac.uk/ena/data/warehouse/filereport?accession={study}&result=read_run&fields=run_accession,fastq_ftp,fastq_md5,fastq_bytes")
+fq <- GET(warehouse_url)
+fq_ftp <- content(fq, encoding = "UTF8") %>% read_delim(delim = "\t")
+fq_ftp
+
+
