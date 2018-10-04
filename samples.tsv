@@ -1,0 +1,3 @@
+sample	treatment	run_accession	fq1	fq2
+10V1	P0	SRR5580233	fasp.sra.ebi.ac.uk:/vol1/fastq/SRR558/003/SRR5580233/SRR5580233_1.fastq.gz	fasp.sra.ebi.ac.uk:/vol1/fastq/SRR558/003/SRR5580233/SRR5580233_2.fastq.gz
+10V1	P0	SRR5580236	fasp.sra.ebi.ac.uk:/vol1/fastq/SRR558/006/SRR5580236/SRR5580236_1.fastq.gz	fasp.sra.ebi.ac.uk:/vol1/fastq/SRR558/006/SRR5580236/SRR5580236_2.fastq.gz
