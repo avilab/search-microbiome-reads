@@ -9,9 +9,8 @@ study <- "SRP100518"
 
 #' retrieve fastq file info and urls
 fq <- GET(glue("http://www.ebi.ac.uk/ena/data/warehouse/filereport?accession={study}&result=read_run"))
-fq_ftp <- content(fq, encoding = "UTF8") %>% read_delim(delim = "\t")
-fq_ftp[1,] %>% unlist()
-
+fq_ftp <- content(fq, encoding = "UTF8") %>% 
+  read_delim(delim = "\t")
 
 #' Runs and samples
 url <- glue("https://www.ebi.ac.uk/ena/data/view/{project}&portal=read_run&display=xml")
@@ -42,4 +41,8 @@ treatments <- select(supp2, Sample, Treatment) %>%
   rename_all(str_to_lower)
 treatments <- left_join(treatments, acc_sample) %>% 
   select(run_accession, everything())
-treatments
+aspera <- left_join(treatments, fq_ftp) %>% 
+  select(run_accession:treatment, fastq_aspera)
+
+samps <- filter(aspera, str_detect(sample, "10V"))
+samps$fastq_aspera[1]
