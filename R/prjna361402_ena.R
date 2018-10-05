@@ -43,15 +43,18 @@ treatments <- left_join(treatments, acc_sample) %>%
   select(run_accession, everything())
 aspera <- left_join(treatments, fq_ftp) %>% 
   select(run_accession:treatment, fastq_aspera) %>% 
-  separate(fastq_aspera, c("fq1", "fq2"), sep = ";") %>% 
-  select(sample, treatment, run_accession, everything())
+  separate(fastq_aspera, c("fasp_fq1", "fasp_fq2"), sep = ";") %>% 
+  mutate(fq1 = basename(fasp_fq1),
+         fq2 = basename(fasp_fq2)) %>% 
+  select(sample_id = sample, treatment, sample = run_accession, fq1, fq2, everything())
 
-samps <- filter(aspera, str_detect(sample, "10V"))
+#' Make smaller subset for testing
+samps <- filter(aspera, str_detect(sample_id, "10V"))
 
 #' Check if target dir exists and if not create 
 path <- glue("~/fastq/{str_to_lower(project)}")
 if (!dir.exists(path)) dir.create(path)
 
+#' Write ti file
 write_tsv(samps, file.path(path, "samples.tsv"))
-write_tsv(samps[1,], "samples.tsv")
-
+# write_tsv(samps[1:2,], file.path(path, "samples.tsv"))
