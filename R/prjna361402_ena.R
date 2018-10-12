@@ -48,8 +48,10 @@ aspera <- left_join(treatments, fq_ftp) %>%
          fq2 = basename(fasp_fq2)) %>% 
   select(sample_id = sample, treatment, sample = run_accession, fq1, fq2, everything())
 
+unique(aspera$sample_id)
+
 #' Make smaller subset for testing
-samps <- filter(aspera, str_detect(sample_id, "10V"))
+samps <- filter(aspera, str_detect(sample_id, "11V"))
 
 #' Check if target dir exists and if not create 
 path <- glue("~/fastq/{str_to_lower(project)}")
