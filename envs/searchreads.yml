@@ -1,6 +1,6 @@
 name: searchreads 
 channels:
-  - biopython
+  - bioconda
   - r
   - conda-forge
   - defaults
