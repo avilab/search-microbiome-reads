@@ -1,0 +1,14 @@
+name: searchreads 
+channels:
+  - biopython
+  - r
+  - conda-forge
+  - defaults
+dependencies:
+  - snakemake
+  - r-base
+  - r-tidyverse
+  - r-xml2
+  - r-httr
+  - r-glue
+  - r-readxl
