@@ -22,8 +22,11 @@ contents <- read_run %>%
 
 run_df <- contents %>% 
   xml_attrs() %>% 
-  rbind_list()
-run_df$title <- contents %>% xml_find_first("TITLE") %>% 
+  do.call(rbind, .) %>% 
+  as_data_frame()
+
+run_df$title <- contents %>% 
+  xml_find_first("TITLE") %>% 
   xml_text()
 acc_sample <- separate(run_df, title, c("title", "sample"), sep = "; ") %>% 
   select(run_accession = accession, sample)
@@ -48,10 +51,8 @@ aspera <- left_join(treatments, fq_ftp) %>%
          fq2 = basename(fasp_fq2)) %>% 
   select(sample_id = sample, treatment, sample = run_accession, fq1, fq2, everything())
 
-unique(aspera$sample_id)
-
 #' Make smaller subset for testing
-samps <- filter(aspera, str_detect(sample_id, "11V"))
+samps <- filter(aspera, str_detect(sample_id, "12V"))
 
 #' Check if target dir exists and if not create 
 path <- glue("~/fastq/{str_to_lower(project)}")
