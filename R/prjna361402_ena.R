@@ -58,6 +58,5 @@ samps <- filter(aspera, str_detect(sample_id, "12V"))
 path <- glue("~/fastq/{str_to_lower(project)}")
 if (!dir.exists(path)) dir.create(path)
 
-#' Write ti file
+#' Write to file
 write_tsv(samps, file.path(path, "samples.tsv"))
-# write_tsv(samps[1:2,], file.path(path, "samples.tsv"))
