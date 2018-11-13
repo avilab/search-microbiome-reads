@@ -10,11 +10,20 @@ runs = pd.read_table("ena_samples.tsv", sep = "\s+", index_col = "sample", dtype
 SAMPLES = runs.index.values.tolist()
 
 def get_fastq_path(wildcards, fasp_url = 'fasp_fq1'):
- return runs.loc[wildcards.sample, [fasp_url]].dropna()[0]
+  url = runs.loc[wildcards.sample, [fasp_url]].dropna()[0]
+  return os.path.dirname(url) 
+
+wildcard_constraints:
+    dataset="[^/_]+"
+
+rule all:
+  input: expand("{sample}", sample = SAMPLES)
 
 rule download:
     input:
       lambda wildcards: get_fastq_path(wildcards, 'fasp_fq1')
+    output:
+      directory("{sample}")
     params:
       "-QT -l 300m -P33001 -i $HOME/.aspera/connect/etc/asperaweb_id_dsa.openssh"
     shell:
