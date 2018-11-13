@@ -14,7 +14,7 @@ def get_fastq_path(wildcards, fasp_url = 'fasp_fq1'):
   return os.path.dirname(url) 
 
 wildcard_constraints:
-    dataset="[^/_]+"
+    sample="[^/_]+"
 
 rule all:
   input: expand("{sample}", sample = SAMPLES)
