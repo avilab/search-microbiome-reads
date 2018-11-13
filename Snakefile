@@ -6,7 +6,7 @@ __license__ = "MIT"
 import os.path
 import pandas as pd
 
-runs = pd.read_table("samples.tsv", sep = "\s+", index_col = "sample", dtype = str)
+runs = pd.read_table("ena_samples.tsv", sep = "\s+", index_col = "sample", dtype = str)
 SAMPLES = runs.index.values.tolist()
 
 def get_fastq_path(wildcards, fasp_url = 'fasp_fq1'):

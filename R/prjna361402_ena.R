@@ -52,11 +52,12 @@ aspera <- left_join(treatments, fq_ftp) %>%
   select(sample_id = sample, treatment, sample = run_accession, fq1, fq2, everything())
 
 #' Make smaller subset for testing
-samps <- filter(aspera, str_detect(sample_id, "12V"))
+id <- c("10V", "11V", "12V", "13V", "20V", "26V")
+samps <- filter(aspera, str_detect(sample_id, paste0(id, collapse = "|")))
 
 #' Check if target dir exists and if not create 
 path <- glue("~/fastq/{str_to_lower(project)}")
 if (!dir.exists(path)) dir.create(path)
 
 #' Write to file
-write_tsv(samps, file.path(path, "samples.tsv"))
+write_tsv(samps, file.path(path, "ena_samples.tsv"))
