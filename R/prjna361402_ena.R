@@ -13,14 +13,15 @@ fq_ftp <- content(fq, encoding = "UTF-8") %>% read_delim(delim = "\t")
 
 samples <- select(fq_ftp, experiment_title, run_accession, library_name, read_count, base_count, fastq_bytes, fastq_md5, fastq_ftp)
 
-samples %>% 
+ftp_paths <- samples %>% 
   separate(fastq_ftp, into = c("fq1", "fq2"), sep = ";") %>% 
   separate(fastq_bytes, into = c("fq1_bytes", "fq2_bytes"), sep = ";") %>%
   separate(fastq_md5, into = c("fq1_md5", "fq2_md5"), sep = ";") %>% 
-  rename(sample = run_accession) %>% 
-  write_delim("samples_remote.tsv", delim = "\t")
+  rename(sample = run_accession)
+ 
+write_delim(ftp_paths, "samples_remote.tsv", delim = "\t")
 
-
+select(ftp_paths, "sample", "fq1", "fq2")
 
 #' Runs and samples
 url <- glue("https://www.ebi.ac.uk/ena/data/view/{project}&portal=read_run&display=xml")
