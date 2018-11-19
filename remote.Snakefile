@@ -17,7 +17,7 @@ rule all:
     
 rule fastp:
     input:
-      FTP.remote(lambda wildcards: get_fastq_ftp(wildcards))
+      lambda wildcards: FTP.remote(get_fastq_ftp(wildcards))
     output:
       pair1 = "munge/{sample}_pair1_trimmed.gz",
       pair2 = "munge/{sample}_pair2_trimmed.gz",
