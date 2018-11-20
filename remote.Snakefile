@@ -3,7 +3,7 @@ import os.path
 import pandas as pd
 from snakemake.remote.FTP import RemoteProvider as FTPRemoteProvider
 
-config = "config.yml"
+configfile: "config.yml"
 FTP = FTPRemoteProvider(username = "anonymous", password = "taavi.pall@ut.ee")
 
 SAMPLES = 'SRR5713952'
@@ -14,7 +14,7 @@ def get_fastq_ftp(wildcards, path):
   return list(urls)
 
 rule all:
-  input: expand("munge/{sample}_pair{n}_trimmed.gz", sample = SAMPLES, n = [1, 2])
+  input: expand("munge/{sample}_pair{n}_trimmed.fq.gz", sample = SAMPLES, n = [1, 2])
     
 rule fastp:
     input:
