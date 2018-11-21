@@ -42,8 +42,8 @@ rule fastp:
         seqtk sample -s{params.seed} {input[0]} {params.frac} > {output.sub1}
         seqtk sample -s{params.seed} {input[1]} {params.frac} > {output.sub2}
       else
-        ln -sr {input.fq1} {output.sub1}
-        ln -sr {input.fq2} {output.sub2}
+        ln -sr {input[0]} {output.sub1}
+        ln -sr {input[1]} {output.sub2}
       fi
       fastp -i {output.sub1} -I {output.sub2} \
             -o {output.pair1} -O {output.pair2} {params.fastp} \
