@@ -36,18 +36,12 @@ rule fastp:
     threads: 8
     conda:
       "envs/fastp.yml"
-    shell:
-      """
-      if [[ {params.frac}>0 ]] && [[ {params.frac}<1 ]] ; then
-        seqtk sample -s{params.seed} {input[0]} {params.frac} > {output.sub1}
-        seqtk sample -s{params.seed} {input[1]} {params.frac} > {output.sub2}
-      else
-        ln -sr {input[0]} {output.sub1}
-        ln -sr {input[1]} {output.sub2}
-      fi
-      fastp -i {output.sub1} -I {output.sub2} \
+    run:
+      if params.frac > 0 and params.frac < 1:
+          shell("seqtk sample -s{params.seed} {input[0]} {params.frac} > {output.sub1} && seqtk sample -s{params.seed} {input[1]} {params.frac} > {output.sub2}")
+      else:
+          shell("ln -sr {input[0]} {output.sub1} && ln -sr {input[1]} {output.sub2}")
+      shell("fastp -i {output.sub1} -I {output.sub2} \
             -o {output.pair1} -O {output.pair2} {params.fastp} \
             -h {output.html} -j {output.json} \
-            -w {threads} > {log} 2>&1
-      """
-
+            -w {threads} > {log} 2>&1")
