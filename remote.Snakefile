@@ -14,7 +14,7 @@ def get_fastq_ftp(wildcards):
   return list(urls)
 
 def downsample(wildcards):
-  return RUNS.loc[wildcards.sample, ['frac']]
+  return RUNS.loc[wildcards.sample, ['frac']][0]
 
 rule all:
   input: expand("munge/{sample}_pair{n}_trimmed.fq.gz", sample = SAMPLES, n = [1, 2])
@@ -37,7 +37,7 @@ rule fastp:
     conda:
       "envs/fastp.yml"
     run:
-      if params.frac > 0 and params.frac < 1:
+      if (params.frac > 0 and params.frac < 1):
           shell("seqtk sample -s{params.seed} {input[0]} {params.frac} > {output.sub1} && seqtk sample -s{params.seed} {input[1]} {params.frac} > {output.sub2}")
       else:
           shell("ln -sr {input[0]} {output.sub1} && ln -sr {input[1]} {output.sub2}")
