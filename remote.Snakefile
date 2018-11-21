@@ -4,7 +4,7 @@ import pandas as pd
 from snakemake.remote.FTP import RemoteProvider as FTPRemoteProvider
 
 configfile: "config.yml"
-RUNS = pd.read_table(path, sep = "\t", index_col = "sample")
+RUNS = pd.read_table("output/samples_norm.tsv", sep = "\t", index_col = "sample")
 FTP = FTPRemoteProvider(username = config["username"], password = config["password"])
 
 SAMPLES = 'SRR5713952'
@@ -37,7 +37,7 @@ rule fastp:
     conda:
       "envs/fastp.yml"
     shell:
-      """"
+      """
       if [[ {params.frac}>0 ]] && [[ {params.frac}<1 ]] ; then
         seqtk sample -s{params.seed} {input.fq1} {params.frac} > {output.sub1}
         seqtk sample -s{params.seed} {input.fq2} {params.frac} > {output.sub2}
@@ -45,6 +45,9 @@ rule fastp:
         ln -sr {input.fq1} {output.sub1}
         ln -sr {input.fq2} {output.sub2}
       fi
-      fastp -i {output.sub1} -I {output.sub2} -o {output.pair1} -O {output.pair2} {params.fastp} -h {output.html} -j {output.json} -w {threads} > {log} 2>&1
-      """"
+      fastp -i {output.sub1} -I {output.sub2} \
+            -o {output.pair1} -O {output.pair2} {params.fastp} \
+            -h {output.html} -j {output.json} \
+            -w {threads} > {log} 2>&1
+      """
       
