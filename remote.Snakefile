@@ -39,8 +39,8 @@ rule fastp:
     shell:
       """
       if [[ {params.frac}>0 ]] && [[ {params.frac}<1 ]] ; then
-        seqtk sample -s{params.seed} {input.fq1} {params.frac} > {output.sub1}
-        seqtk sample -s{params.seed} {input.fq2} {params.frac} > {output.sub2}
+        seqtk sample -s{params.seed} {input[0]} {params.frac} > {output.sub1}
+        seqtk sample -s{params.seed} {input[1]} {params.frac} > {output.sub2}
       else
         ln -sr {input.fq1} {output.sub1}
         ln -sr {input.fq2} {output.sub2}
@@ -50,4 +50,4 @@ rule fastp:
             -h {output.html} -j {output.json} \
             -w {threads} > {log} 2>&1
       """
-      
+
