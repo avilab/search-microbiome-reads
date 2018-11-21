@@ -34,6 +34,7 @@ rule fastp:
       seed = config["seed"],
       fastp = "--trim_front1 5 --trim_tail1 5 --length_required 50 --low_complexity_filter --complexity_threshold 8"
     threads: 8
+    log: "logs/{sample}_fastp.log"
     conda:
       "envs/fastp.yml"
     shell:
