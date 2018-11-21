@@ -32,4 +32,6 @@ rule fastp:
     conda:
       "envs/fastp.yml"
     script:
-      "qc.py"
+      """"
+      fastp -i {input.fq1} -I {input.fq2} -o {output.pair1} -O {output.pair2} {params} -h {output.html} -j {output.json} -w {threads} > {log} 2>&1
+      """"
