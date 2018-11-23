@@ -4,17 +4,17 @@ import pandas as pd
 from snakemake.remote.FTP import RemoteProvider as FTPRemoteProvider
 
 configfile: "config.yaml"
-RUNS = pd.read_table("samples.tsv", sep = "\t", index_col = "sample")
+SAMPLES = pd.read_table("samples.tsv", sep = "\t", index_col = "sample")
 FTP = FTPRemoteProvider(username = config["username"], password = config["password"])
 
-SAMPLES = 'SRR5713952'
+SAMPLE = 'SRR5579958'
 
 def get_fastq(wildcards):
-  urls = RUNS.loc[wildcards.sample, ['fq1', 'fq2']]
+  urls = SAMPLES.loc[wildcards.sample, ['fq1', 'fq2']]
   return list(urls)
 
 rule all:
-  input: expand("munge/{sample}_pair{n}_trimmed.fq.gz", sample = SAMPLES, n = [1, 2])
+  input: expand("munge/{sample}_pair{n}_trimmed.fq.gz", sample = SAMPLE, n = [1, 2])
     
 rule fastp:
     input:
@@ -27,13 +27,13 @@ rule fastp:
       sub1 = temp("munge/{sample}_sub1.fq.gz"),
       sub2 = temp("munge/{sample}_sub2.fq.gz")
     params:
-      frac = lambda wildcards: downsample(wildcards),
+      frac = lambda wildcards: SAMPLES.loc[wildcards.sample, ['frac']][0],
       seed = config["seed"],
       fastp = "--trim_front1 5 --trim_tail1 5 --length_required 50 --low_complexity_filter --complexity_threshold 8"
     threads: 8
     log: "logs/{sample}_fastp.log"
     conda:
-      "envs/fastp.yml"
+      "envs/fastp.yaml"
     shell:
       """
       if (( $(echo "{params.frac} > 0" | bc) )) && (( $(echo "{params.frac} < 1" | bc) )) ; then
