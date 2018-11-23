@@ -3,25 +3,22 @@ import os.path
 import pandas as pd
 from snakemake.remote.FTP import RemoteProvider as FTPRemoteProvider
 
-configfile: "config.yml"
-RUNS = pd.read_table("output/samples_norm.tsv", sep = "\t", index_col = "sample")
+configfile: "config.yaml"
+RUNS = pd.read_table("samples.tsv", sep = "\t", index_col = "sample")
 FTP = FTPRemoteProvider(username = config["username"], password = config["password"])
 
 SAMPLES = 'SRR5713952'
 
-def get_fastq_ftp(wildcards):
+def get_fastq(wildcards):
   urls = RUNS.loc[wildcards.sample, ['fq1', 'fq2']]
   return list(urls)
-
-def downsample(wildcards):
-  return RUNS.loc[wildcards.sample, ['frac']][0]
 
 rule all:
   input: expand("munge/{sample}_pair{n}_trimmed.fq.gz", sample = SAMPLES, n = [1, 2])
     
 rule fastp:
     input:
-      lambda wildcards: FTP.remote(get_fastq_ftp(wildcards))
+      lambda wildcards: get_fastq(wildcards)
     output:
       pair1 = "munge/{sample}_pair1_trimmed.fq.gz",
       pair2 = "munge/{sample}_pair2_trimmed.fq.gz",
