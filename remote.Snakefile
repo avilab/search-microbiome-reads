@@ -18,7 +18,7 @@ rule all:
     
 rule fastp:
   input:
-    lambda wildcards: FTP.remote(get_fastq(wildcards), immediate_close = True)
+    lambda wildcards: FTP.remote(get_fastq(wildcards))
   output:
     "test/{sample}_1.fq.gz", "test/{sample}_2.fq.gz"
   shell:
