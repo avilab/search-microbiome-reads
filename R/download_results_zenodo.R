@@ -5,6 +5,7 @@ library(tidyr)
 library(purrr)
 library(readr)
 
+# ZENODO_PAT was set in .Renviron
 zenodo_get <- function(path) {
     GET('https://zenodo.org', 
         query = list(access_token = Sys.getenv("ZENODO_PAT")),
